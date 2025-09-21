@@ -5,7 +5,7 @@ const TranslationContext = createContext();
 
 export const TranslationProvider = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = useState('en');
-  const [translations, setTranslations] = useState({});
+  const [translations] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [apiKey, setApiKey] = useState('AIzaSyCWU4fpR6WYAjDPMx8w4aAHxcNDdNMq1XY');
   const location = useLocation();
@@ -19,7 +19,7 @@ export const TranslationProvider = ({ children }) => {
 
     // Store the new API key in localStorage
     localStorage.setItem('translationApiKey', apiKey);
-  }, []);
+  }, [apiKey]);
 
   // Auto-change language for home page every 30 seconds
   useEffect(() => {
@@ -46,7 +46,7 @@ export const TranslationProvider = ({ children }) => {
 
       return () => clearInterval(interval);
     }
-  }, [location.pathname]);
+  }, [location.pathname, translatePage]);
 
   const setTranslationApiKey = (key) => {
     setApiKey(key);
