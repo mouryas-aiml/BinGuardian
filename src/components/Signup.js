@@ -4,7 +4,6 @@ import './Auth.css';
 import { auth, db } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { useTranslation } from '../context/TranslationContext';
 import TranslatableText from './TranslatableText';
 
 function Signup() {
