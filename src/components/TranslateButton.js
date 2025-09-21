@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from '../context/TranslationContext';
-import { FaLanguage, FaSpinner } from 'react-icons/fa';
+import { FaLanguage } from 'react-icons/fa';
 import './TranslateButton.css';
 
 function TranslateButton() {

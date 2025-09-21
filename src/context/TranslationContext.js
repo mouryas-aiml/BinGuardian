@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const TranslationContext = createContext();
@@ -21,40 +21,13 @@ export const TranslationProvider = ({ children }) => {
     localStorage.setItem('translationApiKey', apiKey);
   }, [apiKey]);
 
-  // Auto-change language for home page every 30 seconds
-  useEffect(() => {
-    if (location.pathname === '/' || location.pathname === '/home') {
-      const languages = ['en', 'kn', 'hi', 'ta'];
-      const interval = setInterval(() => {
-        setCurrentLanguage(prevLang => {
-          const currentIndex = languages.indexOf(prevLang);
-          const nextIndex = (currentIndex + 1) % languages.length;
-          const newLang = languages[nextIndex];
-          localStorage.setItem('preferredLanguage', newLang);
-
-          // If changing to non-English, translate after a short delay
-          if (newLang !== 'en') {
-            setTimeout(() => translatePage(), 500);
-          } else {
-            // If changing to English, reload the page to reset content
-            window.location.reload();
-          }
-
-          return newLang;
-        });
-      }, 30000);
-
-      return () => clearInterval(interval);
-    }
-  }, [location.pathname, translatePage]);
-
   const setTranslationApiKey = (key) => {
     setApiKey(key);
     localStorage.setItem('translationApiKey', key);
   };
 
   // Improved function to translate all text nodes in the page
-  const translatePage = async () => {
+  const translatePage = useCallback(async () => {
     if (currentLanguage === 'en') return;
 
     setIsLoading(true);
@@ -184,7 +157,34 @@ export const TranslationProvider = ({ children }) => {
       setIsLoading(false);
       console.log('Translation completed');
     }
-  };
+  }, [currentLanguage, apiKey]);
+
+  // Auto-change language for home page every 30 seconds
+  useEffect(() => {
+    if (location.pathname === '/' || location.pathname === '/home') {
+      const languages = ['en', 'kn', 'hi', 'ta'];
+      const interval = setInterval(() => {
+        setCurrentLanguage(prevLang => {
+          const currentIndex = languages.indexOf(prevLang);
+          const nextIndex = (currentIndex + 1) % languages.length;
+          const newLang = languages[nextIndex];
+          localStorage.setItem('preferredLanguage', newLang);
+
+          // If changing to non-English, translate after a short delay
+          if (newLang !== 'en') {
+            setTimeout(() => translatePage(), 500);
+          } else {
+            // If changing to English, reload the page to reset content
+            window.location.reload();
+          }
+
+          return newLang;
+        });
+      }, 30000);
+
+      return () => clearInterval(interval);
+    }
+  }, [location.pathname, translatePage]);
 
   const translateText = (text) => {
     if (!text || currentLanguage === 'en') return text;
